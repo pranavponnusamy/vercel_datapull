@@ -9,3 +9,5 @@ scikit_learn==1.5.2
 Shapely==2.0.6
 fastapi==0.112.1
 opentelemetry-instrumentation-fastapi==0.47b0
+fastapi==0.112.1
+opentelemetry-instrumentation-fastapi==0.47b0
