@@ -1,8 +1,7 @@
 Flask==3.0.3
-folium==0.17.0
 geopandas==0.14.2
 networkx==3.3
-numpy==2.1.1
+numpy==1.22.0
 osmnx==1.9.4
 pandas==2.2.2
 pyproj==3.6.1

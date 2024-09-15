@@ -9,7 +9,7 @@ import osmnx as ox
 import networkx as nx
 import numpy as np
 from sklearn.neighbors import BallTree
-import folium
+# import folium
 import math
 from heapq import heappush, heappop
 import geopandas as gpd
