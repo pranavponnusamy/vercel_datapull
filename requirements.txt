@@ -1,10 +1,10 @@
-Flask==3.0.3
-geopandas==0.14.2
-networkx==3.3
-numpy==1.22.0
-osmnx==1.9.4
-pandas==2.2.2
-pyproj==3.6.1
-scikit_learn==1.5.2
-Shapely==2.0.6
-setuptools==58.0.4
+Flask==3.0.3             # Latest version of Flask (3.x)
+geopandas==0.14.2        # Latest version compatible with Flask 3.x
+networkx==3.3            # Latest stable version
+numpy==1.24.3            # More compatible with other dependencies and Flask 3.x
+osmnx==1.4.1             # Works well with geopandas, pyproj, and numpy
+pandas==2.2.2            # Latest version, compatible with Flask 3.x and geopandas
+pyproj==3.6.1            # Latest version, compatible with geopandas
+scikit_learn==1.2.2      # More stable version for Flask 3.x environment
+Shapely==2.0.1           # Compatible with geopandas and Flask 3.x
+setuptools==74.0.0       # Latest setuptools that works well with Flask 3.x
