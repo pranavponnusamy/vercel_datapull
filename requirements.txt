@@ -1,8 +1,8 @@
 Flask==3.0.3
-geopandas==0.14.4
+geopandas
 networkx==3.2.1
-numpy==2.1.1
-osmnx==1.9.4
+numpy
+osmnx
 pandas==2.2.2
 pyproj==3.6.1
 scikit_learn==1.5.2
