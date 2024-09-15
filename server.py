@@ -177,7 +177,7 @@ def find_route_with_driver_skill(G, origin_node, destination_node, driver_skill=
     G_adjusted = adjust_edge_weights(G, driver_skill=driver_skill, base_weight_factor=1.0, accident_weight=1000.0, turn_weight=10.0)
 
     # Define heuristic function for A*
-    heuristic = lambda u, v: ox.distance.great_circle_vec(
+    heuristic = lambda u, v: ox.distance.great_circle(
         G_adjusted.nodes[u]['y'], G_adjusted.nodes[u]['x'],
         G_adjusted.nodes[v]['y'], G_adjusted.nodes[v]['x']
     )
@@ -250,6 +250,41 @@ def processAccel():
     return
     
     
+    
+def compute_danger_score(route, G):
+    """
+    Compute the danger score for a given route by summing the accident counts on all edges.
+    """
+    danger_score = 0
+    for i in range(len(route) - 1):
+        u = route[i]
+        v = route[i + 1]
+        # There might be multiple keys between u and v; choose the first one
+        edge_data = G.get_edge_data(u, v)
+        if edge_data is None:
+            continue
+        # If multiple parallel edges exist, sum their accident counts
+        edge_accidents = sum([data.get('accident_count', 0) for key, data in edge_data.items()])
+        danger_score += edge_accidents
+    return danger_score
+
+
+def compute_safety_boost(danger_score, baseline_danger_score):
+    """
+    Compute the safety boost percentage for each route based on danger scores.
+    The safest route has 100% safety boost, and others are scaled accordingly.
+    """
+    
+    safety_boost
+    
+    if danger_score == baseline_danger_score:
+        safety_boost = 100.0  # All routes have the same danger score
+    else:
+        safety_boost = (1 - danger_score/baseline_danger_score) * 100
+
+    return safety_boost
+    
+    
 
 def computeRoute(startCoordinates, endCoordinates, driverSkill):
     origin_lat, origin_lon = startCoordinates
@@ -269,6 +304,10 @@ def computeRoute(startCoordinates, endCoordinates, driverSkill):
         ],
         
         "accidents":[
+            
+        ],
+        
+        "metrics":[
             
         ]
     }
@@ -297,14 +336,18 @@ def computeRoute(startCoordinates, endCoordinates, driverSkill):
         ]
 
         
-    accident_nodes = [{"latitude": row['YCOORD'], "longitude": row['XCOORD']} for index, row in filtered_accidents.iterrows()]
+    accident_nodes = [{"latitude": row['XCOORD'], "longitude": row['YCOORD']} for index, row in filtered_accidents.iterrows()]
         
     for acc in accident_nodes:    
         json_data["accidents"].append(acc)
-        
+    
+    danger_score = compute_danger_score(route, G)
+    
+    json_data["metrics"].append({"danger_score": danger_score})
+    json_data["metrics"].append({"turns ": turns})
+    
         
     return json_data, 202
-
 
         
 
