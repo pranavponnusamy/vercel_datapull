@@ -211,7 +211,7 @@ def getRoute():
     data = request.get_json()
     if request.method == 'POST':
         return computeRoute((input["start_lat"], input["start_long"]), (input["end_lat"], input["end_long"]), driverSkill=input["driverSkill"])
-    return 404
+    return 402
 
 
 @app.route("/accel", methods=['POST'])
