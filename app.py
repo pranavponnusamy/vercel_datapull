@@ -19,7 +19,7 @@ from functools import partial
 from pyproj import Proj, transform
 
 # Preprocessing
-accident_file_path = 'C:\\Users\\prana\\Documents\\GitHub\\test\\DriveWise_HackMIT-2024\\Code\\lat_long.csv'
+accident_file_path = 'lat_long.csv'
 accidents_df = pd.read_csv(accident_file_path)
 place_name = 'Suffolk County, Massachusetts, USA'
 G = ox.graph_from_place(place_name, network_type='drive')
