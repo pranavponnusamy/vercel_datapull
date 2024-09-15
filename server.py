@@ -207,10 +207,10 @@ def count_turns(route, G, angle_threshold=45):
 app = Flask(__name__)
 
 @app.route("/route", methods=['POST'])
-def getRoute():
+def getRoute(): 
     data = request.get_json()
     if request.method == 'POST':
-        return computeRoute((input["start_lat"], input["start_long"]), (input["start_lat"], input["start_long"]), driverSkill=input["driverSkill"])
+        return computeRoute((input["start_lat"], input["start_long"]), (input["end_lat"], input["end_long"]), driverSkill=input["driverSkill"])
     return 404
 
 
