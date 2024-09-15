@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import numpy as np
-from scipy.signal import *
-import matplotlib.pyplot as plt
+# from scipy.signal import *
+# import matplotlib.pyplot as plt
 import json
 
 import pandas as pd
@@ -19,7 +19,7 @@ from functools import partial
 from pyproj import Proj, transform
 
 # Preprocessing
-accident_file_path = 'lat_long.csv'
+accident_file_path = 'C:\\Users\\prana\\Documents\\GitHub\\test\\DriveWise_HackMIT-2024\\Code\\lat_long.csv'
 accidents_df = pd.read_csv(accident_file_path)
 place_name = 'Suffolk County, Massachusetts, USA'
 G = ox.graph_from_place(place_name, network_type='drive')
@@ -206,20 +206,44 @@ def count_turns(route, G, angle_threshold=45):
 
 app = Flask(__name__)
 
-@app.route("/route", methods=['POST'])
-def getRoute(): 
-    data = request.get_json()
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+
+@app.route("/routes", methods=['GET', 'POST'])
+def get_route():
     if request.method == 'POST':
-        return computeRoute((input["start_lat"], input["start_long"]), (input["end_lat"], input["end_long"]), driverSkill=input["driverSkill"])
-    return 402
+        print("works")
+        data = request.get_json()
+
+        # Parse input from the JSON request
+        start_lat = data.get("start_lat")
+        start_long = data.get("start_long")
+        end_lat = data.get("end_lat")
+        end_long = data.get("end_long")
+        driver_skill = data.get("driver_skill", 0.5)  # Use snake_case for consistency
+
+        # Validate the input
+        if not all([start_lat, start_long, end_lat, end_long]):
+            return jsonify({"error": "Missing coordinates"}), 400
+
+        # Compute the route
+        result, status_code = computeRoute((start_lat, start_long), (end_lat, end_long), driver_skill)
+        return result, status_code
+    else:
+        return "<p>Hello, World!</p>" 
 
 
 @app.route("/accel", methods=['POST'])
 def get_acceleration():
     data = request.get_json()
-    # with open('data.json', 'w', encoding='utf-8') as f:
-    #     json.dump(data, f, ensure_ascii=False, indent=4)    
-    return processAccel(), 200
+    # Process the acceleration data here (currently not defined)
+    result = process_accel(data)  # Placeholder function
+    return jsonify(result), 200
+
+def process_accel(data):
+    # Placeholder for actual acceleration processing logic
+    return {"message": "Acceleration data processed"}
 
 
 
@@ -286,4 +310,4 @@ def computeRoute(startCoordinates, endCoordinates, driverSkill):
         
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
