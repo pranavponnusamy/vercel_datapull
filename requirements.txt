@@ -12,4 +12,3 @@ opentelemetry-instrumentation-fastapi==0.47b0
 fastapi==0.112.1
 opentelemetry-instrumentation-fastapi==0.47b0
 gunicorn
-os
