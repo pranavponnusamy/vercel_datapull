@@ -1,6 +1,6 @@
 Flask==3.0.3
 folium==0.17.0
-geopandas==1.5.0
+geopandas==0.14.2
 networkx==3.3
 numpy==2.1.1
 osmnx==1.9.4
