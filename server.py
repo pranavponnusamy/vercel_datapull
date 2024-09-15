@@ -19,7 +19,7 @@ from functools import partial
 from pyproj import Proj, transform
 
 # Preprocessing
-accident_file_path = 'lat_long.csv'
+accident_file_path = 'C:\\Users\\prana\\Documents\\GitHub\\test\\DriveWise_HackMIT-2024\\Code\\lat_long.csv'
 accidents_df = pd.read_csv(accident_file_path)
 place_name = 'Suffolk County, Massachusetts, USA'
 G = ox.graph_from_place(place_name, network_type='drive')
@@ -213,7 +213,6 @@ def hello_world():
 @app.route("/routes", methods=['GET', 'POST'])
 def get_route():
     if request.method == 'POST':
-        print("works")
         data = request.get_json()
 
         # Parse input from the JSON request
@@ -221,7 +220,7 @@ def get_route():
         start_long = data.get("start_long")
         end_lat = data.get("end_lat")
         end_long = data.get("end_long")
-        driver_skill = data.get("driver_skill", 0.5)  # Use snake_case for consistency
+        driver_skill = data.get("driver_skill")  # Use snake_case for consistency
 
         # Validate the input
         if not all([start_lat, start_long, end_lat, end_long]):
@@ -259,10 +258,10 @@ def computeRoute(startCoordinates, endCoordinates, driverSkill):
     origin_node = ox.distance.  nearest_nodes(G, X=origin_lon, Y=origin_lat)
     destination_node = ox.distance.nearest_nodes(G, X=destination_lon, Y=destination_lat)
 
-    route = find_route_with_driver_skill(G, origin_node, destination_node, driver_skill=1)
+    route = find_route_with_driver_skill(G, origin_node, destination_node, driverSkill)
     turns = count_turns(route, G)
 
-    route_nodes = [{"lat": G.nodes[n]['y'], "long" :G.nodes[n]['x']} for n in route]
+    route_nodes = [{"latitude": G.nodes[n]['y'], "longitude" :G.nodes[n]['x']} for n in route]
 
     json_data = {
         'waypoints': [
@@ -277,7 +276,7 @@ def computeRoute(startCoordinates, endCoordinates, driverSkill):
     for route_node in route_nodes  :
         json_data["waypoints"].append(route_node)
 
-    route = find_route_with_driver_skill(G, origin_node, destination_node, driver_skill=1)
+    route = find_route_with_driver_skill(G, origin_node, destination_node, driverSkill)
     all_route_nodes = []
     if route:
         all_route_nodes.extend(route)
@@ -298,7 +297,7 @@ def computeRoute(startCoordinates, endCoordinates, driverSkill):
         ]
 
         
-    accident_nodes = [{"lat": row['YCOORD'], "long": row['XCOORD']} for index, row in filtered_accidents.iterrows()]
+    accident_nodes = [{"latitude": row['YCOORD'], "longitude": row['XCOORD']} for index, row in filtered_accidents.iterrows()]
         
     for acc in accident_nodes:    
         json_data["accidents"].append(acc)
@@ -310,4 +309,4 @@ def computeRoute(startCoordinates, endCoordinates, driverSkill):
         
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
