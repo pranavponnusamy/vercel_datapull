@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxslt1-dev \
     libjpeg-dev \
     zlib1g-dev \
+    python3-distutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables to optimize Python installation

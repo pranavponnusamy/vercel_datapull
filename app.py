@@ -1,34 +1,26 @@
 from flask import Flask, request, jsonify
 import numpy as np
-# from scipy.signal import *
-# import matplotlib.pyplot as plt
 import json
 import os
-
 import pandas as pd
 import osmnx as ox
 import networkx as nx
 import numpy as np
 from sklearn.neighbors import BallTree
-# import folium
 import math
 from heapq import heappush, heappop
-# import geopandas as gpd
 from shapely.geometry import Point
-
 from functools import partial
-# from pyproj import Proj, transform
 
 # Preprocessing
 accident_file_path = 'lat_long.csv'
-accidents_df = pd.read_csv(accident_file_path, )
-#print(accidents_df.columns)
+accidents_df = pd.read_csv(accident_file_path)
 place_name = 'Philadelphia County, Pennsylvania, USA'
 G = ox.graph_from_place(place_name, network_type='drive')
 nodes, edges = ox.graph_to_gdfs(G)
 
 
-def map_accidents_to_edges(G, accidents, buffer_dist=50):
+def map_accidents_to_edges(G, accidents, buffer_dist=69):
     """
     Map accidents to the nearest edges using BallTree for efficient spatial queries.
     """
@@ -206,6 +198,25 @@ def count_turns(route, G, angle_threshold=45):
     return turns
 
 
+# New Functions for Metrics
+
+def compute_danger_score(route, G):
+    """
+    Compute the danger score for a given route by summing the accident counts on all edges.
+    """
+    danger_score = 0
+    for i in range(len(route) - 1):
+        u = route[i]
+        v = route[i + 1]
+        # There might be multiple keys between u and v; choose the first one
+        edge_data = G.get_edge_data(u, v)
+        if edge_data is None:
+            continue
+        # If multiple parallel edges exist, sum their accident counts
+        edge_accidents = sum([data.get('accident_count', 0) for key, data in edge_data.items()])
+        danger_score += edge_accidents
+    return danger_score
+
 
 app = Flask(__name__)
 
@@ -236,58 +247,33 @@ def get_route():
         return "<p>Hello, World!</p>" 
 
 
-@app.route("/accel", methods=['POST'])
-def get_acceleration():
-    data = request.get_json()
-    # Process the acceleration data here (currently not defined)
-    result = process_accel(data)  # Placeholder function
-    return jsonify(result), 200
-
-def process_accel(data):
-    # Placeholder for actual acceleration processing logic
-    return {"message": "Acceleration data processed"}
-
-
-
-def processAccel():
-    return
-    
-    
-    
-def compute_danger_score(route, G):
-    """
-    Compute the danger score for a given route by summing the accident counts on all edges.
-    """
-    danger_score = 0
-    for i in range(len(route) - 1):
-        u = route[i]
-        v = route[i + 1]
-        # There might be multiple keys between u and v; choose the first one
-        edge_data = G.get_edge_data(u, v)
-        if edge_data is None:
-            continue
-        # If multiple parallel edges exist, sum their accident counts
-        edge_accidents = sum([data.get('accident_count', 0) for key, data in edge_data.items()])
-        danger_score += edge_accidents
-    return danger_score
-
-
-def compute_safety_boost(danger_score, baseline_danger_score):
-    """
-    Compute the safety boost percentage for each route based on danger scores.
-    The safest route has 100% safety boost, and others are scaled accordingly.
-    """
-    
-    safety_boost
-    
-    if danger_score == baseline_danger_score:
-        safety_boost = 100.0  # All routes have the same danger score
+@app.route("/accident", methods=['GET','POST'])
+def add_accident():
+    if request.method == 'POST':
+        data = request.get_json()
+        lat = data.get("lat")
+        long = data.get("long")
+        
+        if not all([lat, long]):
+            return jsonify({"error": "Missing coordinates"}), 400
+        
+        with open("lat_long.csv", 'a') as file:
+            file.write(f"\n{lat}, {long}")
+        return "<p>All good</p>"
     else:
-        safety_boost = (1 - danger_score/baseline_danger_score) * 100
+        return "<p>Hello, World!</p>"
+    
 
-    return safety_boost
+# def process_accel(data):
+#     # Placeholder for actual acceleration processing logic
+#     return {"message": "Acceleration data processed"}
+
+
+
+# def processAccel():
+#     return
     
-    
+        
 
 def computeRoute(startCoordinates, endCoordinates, driverSkill):
     origin_lat, origin_lon = startCoordinates
@@ -345,6 +331,7 @@ def computeRoute(startCoordinates, endCoordinates, driverSkill):
         json_data["accidents"].append(acc)
     
     danger_score = compute_danger_score(route, G)
+    
     
     json_data["metrics"].append({"danger_score": danger_score})
     json_data["metrics"].append({"turns ": turns})
