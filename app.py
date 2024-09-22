@@ -13,18 +13,20 @@ from sklearn.neighbors import BallTree
 # import folium
 import math
 from heapq import heappush, heappop
-import geopandas as gpd
+# import geopandas as gpd
 from shapely.geometry import Point
 
 from functools import partial
-from pyproj import Proj, transform
+# from pyproj import Proj, transform
 
 # Preprocessing
 accident_file_path = 'lat_long.csv'
-accidents_df = pd.read_csv(accident_file_path)
-place_name = 'Suffolk County, Massachusetts, USA'
+accidents_df = pd.read_csv(accident_file_path, )
+#print(accidents_df.columns)
+place_name = 'Philadelphia County, Pennsylvania, USA'
 G = ox.graph_from_place(place_name, network_type='drive')
 nodes, edges = ox.graph_to_gdfs(G)
+
 
 def map_accidents_to_edges(G, accidents, buffer_dist=50):
     """
